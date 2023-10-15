@@ -34,38 +34,48 @@ function Task(props) {
 }
 
 function onClick() {
-	fetch('http://localhost/api/tasks', {
-		method: 'POST',
-		headers: {
-		'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ description: newTask, completed: false })
+	fetch(`http://localhost/api/tasks/${props.id}`, {
+		method: 'DELETE',
 	})
-		.then(response => response.json())
-		.then(data => {
-			props.setTasks(tasks => [...tasks, data]);
-		})
-		.catch((error) => {
-			console.error('Error:', error);
-		});
-		setNewTask(""); // Clear the input field
+	.then(() => {
+		// remove it from the state
+		props.setTasks(tasks => tasks.filter(task => task.id !== props.id));
+	})
+	.catch((error) => {
+		console.error('Error:', error);
+	});
 }
 
-	return (
-		<li><button type="button" onClick={onClick}>X</button> { props.description } <input type="checkbox" checked={props.completed} onChange={onChange}/></li>
-	);
+return (
+	<li><button type="button" onClick={onClick}>X</button> { props.description } <input type="checkbox" checked={props.completed} onChange={onChange}/></li>
+);
 }
 
 function List(props) {
 
 	const [newTask, setNewTask] = useState("");
-
+  
 	function onChange(event) {
-		setNewTask(event.target.value);
+	  setNewTask(event.target.value);
 	}
-
+  
 	function onClick() {
-		props.setTasks(tasks => [...tasks, { id: tasks.length + 1, description: newTask, completed: false }]);
+		fetch('http://localhost/api/tasks', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ description: newTask, completed: false })
+		})
+			.then(response => response.json())
+			.then(data => {
+				props.setTasks(tasks => [...tasks, data]);
+			})
+			.catch((error) => {
+				console.error('Error:', error);
+			});
+  
+	  	setNewTask("");  // Clear the input field
 	}
 
 	return (
