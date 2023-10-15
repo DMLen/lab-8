@@ -19,10 +19,23 @@ function Task(props) {
 		}));
 	}
 
-	function onClick() {
-		// Find the task we want to delete and remove it
-		props.setTasks(tasks => tasks.filter(task => task.id !== props.id));
-	}
+function onClick() {
+	fetch('http://localhost/api/tasks', {
+		method: 'POST',
+		headers: {
+		'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ description: newTask, completed: false })
+	})
+		.then(response => response.json())
+		.then(data => {
+			props.setTasks(tasks => [...tasks, data]);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+		});
+		setNewTask(""); // Clear the input field
+}
 
 	return (
 		<li><button type="button" onClick={onClick}>X</button> { props.description } <input type="checkbox" checked={props.completed} onChange={onChange}/></li>
